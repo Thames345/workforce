@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ระบบควบคุมกำลังพลช่าง</title>
+
+<!-- Sarabun font — weights 400/500/600 only -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css?v=20260819-2">
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="app-header" id="app-header">
+  <div class="header-left">
+    <span class="header-logo" aria-hidden="true">👷</span>
+    <div class="header-title">
+      <span class="title-main">กำลังพลช่าง</span>
+      <span class="title-sub">ระบบควบคุมการเข้างาน</span>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="sync-info">
+      <div class="sync-badge sync-local" id="sync-badge" title="สถานะการซิงค์ข้อมูลกับ Google Sheets">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span class="sync-text" id="sync-text">กำลังเชื่อมต่อระบบหลังบ้าน…</span>
+      </div>
+      <span class="sync-last-time" id="sync-last-time"></span>
+    </div>
+    <button class="btn btn-outline btn-header" id="btn-open-sheet" type="button">
+      <span aria-hidden="true">📊</span><span>เปิด Google Sheets</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================================================
+     MAIN NAVIGATION
+     ============================================================ -->
+<nav class="main-nav" id="main-nav" aria-label="เมนูหลัก">
+  <button class="nav-btn active" data-page="dashboard" type="button">
+    <span class="nav-icon" aria-hidden="true">🏠</span><span>หน้าหลัก</span>
+  </button>
+  <button class="nav-btn" data-page="submit" type="button">
+    <span class="nav-icon" aria-hidden="true">📝</span><span>แจ้งสถานะ</span>
+  </button>
+  <button class="nav-btn" data-page="manage" type="button">
+    <span class="nav-icon" aria-hidden="true">👥</span><span>จัดการพนักงาน</span>
+  </button>
+  <button class="nav-btn nav-btn-external" id="nav-open-sheet" type="button">
+    <span class="nav-icon" aria-hidden="true">📊</span><span>เปิด Google Sheets</span>
+  </button>
+</nav>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main class="app-main" id="app-main">
+
+  <!-- ================= PAGE: DASHBOARD ================= -->
+  <section class="page page-dashboard active" id="page-dashboard" aria-label="หน้าหลัก">
+
+    <div class="dash-toprow">
+      <div class="greeting-block">
+        <h1 class="greeting-text" id="greeting-text">สวัสดีตอนเช้า 👋</h1>
+        <p class="greeting-date" id="greeting-date">—</p>
+      </div>
+      <div class="dash-actions">
+        <button class="btn btn-secondary" id="btn-sync-now" type="button">
+          <span aria-hidden="true">🔄</span><span>ซิงค์ข้อมูล</span>
+        </button>
+        <button class="btn btn-primary" id="btn-submit-future" type="button">
+          <span aria-hidden="true">📝</span><span>แจ้งสถานะล่วงหน้า</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card kpi-workforce">
+        <span class="kpi-icon" aria-hidden="true">👷</span>
+        <div class="kpi-body">
+          <span class="kpi-value" id="kpi-workforce-value">0/0 คน</span>
+          <span class="kpi-label">กำลังพลวันนี้</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-percent">
+        <span class="kpi-icon" aria-hidden="true">📈</span>
+        <div class="kpi-body">
+          <span class="kpi-value" id="kpi-percent-value">0%</span>
+          <span class="kpi-label">% กำลังพล</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-work">
+        <span class="kpi-icon" aria-hidden="true">🛠️</span>
+        <div class="kpi-body">
+          <span class="kpi-value" id="kpi-work-value">0</span>
+          <span class="kpi-label">ทำงาน</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-leave">
+        <span class="kpi-icon" aria-hidden="true">🏥</span>
+        <div class="kpi-body">
+          <span class="kpi-value" id="kpi-leave-value">0</span>
+          <span class="kpi-label">ลา</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-off">
+        <span class="kpi-icon" aria-hidden="true">🏡</span>
+        <div class="kpi-body">
+          <span class="kpi-value" id="kpi-off-value">0</span>
+          <span class="kpi-label">วันหยุด</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-noot">
+        <span class="kpi-icon" aria-hidden="true">🌙</span>
+        <div class="kpi-body">
+          <span class="kpi-value" id="kpi-noot-value">0</span>
+          <span class="kpi-label">ไม่ทำ OT</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-bottomrow">
+
+      <!-- ---- Calendar ---- -->
+      <div class="calendar-panel" id="calendar-panel">
+        <div class="calendar-header">
+          <button class="cal-nav-btn" id="cal-prev" type="button" aria-label="เดือนก่อนหน้า">‹</button>
+          <span class="calendar-title" id="calendar-title">—</span>
+          <button class="cal-nav-btn" id="cal-next" type="button" aria-label="เดือนถัดไป">›</button>
+        </div>
+        <div class="calendar-weekdays">
+          <span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span>
+        </div>
+        <div class="calendar-grid" id="calendar-grid"><!-- day cells rendered by app.js --></div>
+        <div class="calendar-legend">
+          <span class="legend-item"><span class="legend-dot legend-work"></span>ทำงาน</span>
+          <span class="legend-item"><span class="legend-dot legend-leave"></span>ลา</span>
+          <span class="legend-item"><span class="legend-dot legend-off"></span>วันหยุด</span>
+          <span class="legend-item"><span class="legend-dot legend-noot"></span>ไม่ทำ OT</span>
+        </div>
+      </div>
+
+      <!-- ---- Workforce details ---- -->
+      <div class="details-panel" id="details-panel">
+        <div class="details-header">
+          <span class="details-title">รายละเอียดกำลังพล</span>
+          <span class="details-date" id="details-date">—</span>
+        </div>
+        <div class="dept-grid" id="dept-grid"><!-- department cards rendered by app.js --></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= PAGE: SUBMIT STATUS ================= -->
+  <section class="page page-submit" id="page-submit" aria-label="แจ้งสถานะ">
+    <div class="submit-page-header">
+      <div>
+        <span class="submit-eyebrow">WORKFORCE PLANNING</span>
+        <h1 class="submit-page-title">แจ้งสถานะกำลังพลล่วงหน้า</h1>
+        <p class="submit-page-subtitle">บันทึกแผนการทำงาน ลา วันหยุด และการไม่ทำ OT ของทีมช่าง</p>
+      </div>
+      <div class="submit-header-note">
+        <span class="submit-header-note-icon" aria-hidden="true">✓</span>
+        <div><strong>ข้อมูลเชื่อมต่อส่วนกลาง</strong><span>ทุกเครื่องเห็นข้อมูลชุดเดียวกัน</span></div>
+      </div>
+    </div>
+
+    <div class="submit-workspace">
+    <div class="form-card form-card-submit">
+      <div class="form-card-heading">
+        <span class="form-step-badge">01</span>
+        <div><h2 class="form-title">กรอกข้อมูลสถานะ</h2><p>เลือกพนักงาน วันที่ และสถานะที่ต้องการ</p></div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="submit-employee"><span>พนักงาน</span><small>จำเป็น</small></label>
+        <select class="form-select" id="submit-employee">
+          <option value="">— เลือกพนักงาน —</option>
+        </select>
+      </div>
+
+      <div class="employee-info" id="submit-employee-info">
+        <div class="info-item"><span class="info-label">รหัส</span><span class="info-value" id="info-code">—</span></div>
+        <div class="info-item"><span class="info-label">ชื่อ</span><span class="info-value" id="info-name">—</span></div>
+        <div class="info-item"><span class="info-label">แผนก</span><span class="info-value" id="info-dept">—</span></div>
+        <div class="info-item"><span class="info-label">กะปกติ</span><span class="info-value" id="info-shift">—</span></div>
+      </div>
+
+      <div class="form-row-inline">
+        <div class="form-row">
+          <label class="form-label" for="submit-date"><span>วันที่</span><small>จำเป็น</small></label>
+          <input class="form-input" type="date" id="submit-date">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="submit-shift">กะปฏิบัติงาน</label>
+          <select class="form-select" id="submit-shift">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="O">O</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <span class="form-label"><span>สถานะ</span><small>เลือก 1 รายการ</small></span>
+        <div class="status-btn-group" id="status-btn-group">
+          <button class="status-btn status-work" data-status="work" type="button">
+            <span class="status-icon" aria-hidden="true">🛠️</span><span>ทำงาน</span>
+          </button>
+          <button class="status-btn status-leave" data-status="leave" type="button">
+            <span class="status-icon" aria-hidden="true">🏥</span><span>ลา</span>
+          </button>
+          <button class="status-btn status-off" data-status="off" type="button">
+            <span class="status-icon" aria-hidden="true">🏡</span><span>วันหยุด</span>
+          </button>
+          <button class="status-btn status-noot" data-status="no_ot" type="button">
+            <span class="status-icon" aria-hidden="true">🌙</span><span>ไม่ทำ OT</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="submit-note">หมายเหตุ</label>
+        <textarea class="form-textarea" id="submit-note" rows="3" placeholder="ระบุรายละเอียดเพิ่มเติม เช่น ประเภทการลา หรือเหตุผล (ถ้ามี)"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline" id="btn-submit-cancel" type="button">ยกเลิก</button>
+        <button class="btn btn-danger is-hidden" id="btn-submit-delete" type="button">ลบรายการ</button>
+        <button class="btn btn-primary" id="btn-submit-save" type="button">
+          <span aria-hidden="true">💾</span><span id="submit-save-label">บันทึก</span>
+        </button>
+      </div>
+    </div>
+
+    </div>
+  </section>
+
+  <!-- ================= PAGE: MANAGE EMPLOYEES ================= -->
+  <section class="page page-manage" id="page-manage" aria-label="จัดการพนักงาน">
+    <div class="manage-layout">
+
+      <div class="form-card manage-form-card">
+        <h2 class="form-title">➕ เพิ่มพนักงาน</h2>
+
+        <div class="form-row">
+          <label class="form-label" for="mgr-code">รหัสพนักงาน</label>
+          <input class="form-input" type="text" id="mgr-code" placeholder="เช่น 680123">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="mgr-name">ชื่อ-นามสกุล</label>
+          <input class="form-input" type="text" id="mgr-name" placeholder="เช่น นายสมชาย ใจดี">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="mgr-dept">แผนก</label>
+          <input class="form-input" type="text" id="mgr-dept" placeholder="เช่น MVR(Lotus)">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="mgr-dept-code">รหัสแผนก</label>
+          <select class="form-select" id="mgr-dept-code">
+            <option value="MVR">MVR</option>
+            <option value="MVR-LOTUS">MVR-LOTUS</option>
+            <option value="MSR">MSR</option>
+            <option value="MPR">MPR</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="mgr-position">ตำแหน่ง</label>
+          <input class="form-input" type="text" id="mgr-position" placeholder="เช่น ช่างเทคนิค" value="ช่างเทคนิค">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="mgr-shift">กะ</label>
+          <select class="form-select" id="mgr-shift">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="O">O</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" id="btn-mgr-add" type="button">
+            <span aria-hidden="true">➕</span><span>เพิ่มพนักงาน</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-header">
+          <h2 class="form-title">👥 พนักงานทั้งหมด (<span id="mgr-total-count">0</span>)</h2>
+          <input class="form-input table-search" type="text" id="mgr-search" placeholder="🔍 ค้นหาชื่อหรือรหัส...">
+        </div>
+        <div class="table-scroll">
+          <table class="employee-table" id="employee-table">
+            <thead>
+              <tr>
+                <th>รหัส</th><th>ชื่อ</th><th>แผนก</th><th>รหัสแผนก</th><th>ตำแหน่ง</th><th>กะ</th>
+              </tr>
+            </thead>
+            <tbody id="employee-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     TOAST NOTIFICATIONS
+     ============================================================ -->
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<script src="config.js?v=20260819-2"></script>
+<script src="app.js?v=20260819-2"></script>
+</body>
+</html>
