@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="styles.css?v=20260827-ij-search">
+<link rel="stylesheet" href="styles.css?v=20260827-streamline-icons">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
      ============================================================ -->
 <header class="app-header" id="app-header">
   <div class="header-left">
-    <span class="header-logo" aria-hidden="true">👷</span>
+    <span class="header-logo" aria-hidden="true"><img src="icons/brand.png" alt=""></span>
     <div class="header-title">
       <span class="title-main">กำลังพลช่าง</span>
       <span class="title-sub">ระบบควบคุมการเข้างาน</span>
@@ -35,7 +35,7 @@
       <span class="sync-last-time" id="sync-last-time"></span>
     </div>
     <button class="btn btn-outline btn-header" id="btn-open-sheet" type="button">
-      <span aria-hidden="true">📊</span><span>เปิด Google Sheets</span>
+      <img class="btn-icon" src="icons/spreadsheet.png" alt="" aria-hidden="true"><span>เปิด Google Sheets</span>
     </button>
   </div>
 </header>
@@ -45,16 +45,16 @@
      ============================================================ -->
 <nav class="main-nav" id="main-nav" aria-label="เมนูหลัก">
   <button class="nav-btn active" data-page="dashboard" type="button">
-    <span class="nav-icon" aria-hidden="true">🏠</span><span>หน้าหลัก</span>
+    <span class="nav-icon" aria-hidden="true"><img src="icons/home.png" alt=""></span><span>หน้าหลัก</span>
   </button>
   <button class="nav-btn" data-page="submit" type="button">
-    <span class="nav-icon" aria-hidden="true">📝</span><span>แจ้งสถานะ</span>
+    <span class="nav-icon" aria-hidden="true"><img src="icons/submit-status.png" alt=""></span><span>แจ้งสถานะ</span>
   </button>
   <button class="nav-btn" data-page="manage" type="button">
-    <span class="nav-icon" aria-hidden="true">👥</span><span>จัดการพนักงาน</span>
+    <span class="nav-icon" aria-hidden="true"><img src="icons/employees.png" alt=""></span><span>จัดการพนักงาน</span>
   </button>
   <button class="nav-btn nav-btn-external" id="nav-open-sheet" type="button">
-    <span class="nav-icon" aria-hidden="true">📊</span><span>เปิด Google Sheets</span>
+    <span class="nav-icon" aria-hidden="true"><img src="icons/spreadsheet.png" alt=""></span><span>เปิด Google Sheets</span>
   </button>
 </nav>
 
@@ -68,57 +68,57 @@
 
     <div class="dash-toprow">
       <div class="greeting-block">
-        <h1 class="greeting-text" id="greeting-text">สวัสดีตอนเช้า 👋</h1>
+        <h1 class="greeting-text" id="greeting-text">สวัสดีตอนเช้า</h1>
         <p class="greeting-date" id="greeting-date">—</p>
       </div>
       <div class="dash-actions">
         <button class="btn btn-secondary" id="btn-sync-now" type="button">
-          <span aria-hidden="true">🔄</span><span>ซิงค์ข้อมูล</span>
+          <img class="btn-icon" src="icons/sync.png" alt="" aria-hidden="true"><span>ซิงค์ข้อมูล</span>
         </button>
         <button class="btn btn-primary" id="btn-submit-future" type="button">
-          <span aria-hidden="true">📝</span><span>แจ้งสถานะล่วงหน้า</span>
+          <img class="btn-icon" src="icons/submit-status.png" alt="" aria-hidden="true"><span>แจ้งสถานะล่วงหน้า</span>
         </button>
       </div>
     </div>
 
     <div class="kpi-grid" id="kpi-grid">
       <div class="kpi-card kpi-workforce">
-        <span class="kpi-icon" aria-hidden="true">👷</span>
+        <span class="kpi-icon" aria-hidden="true"><img src="icons/employees.png" alt=""></span>
         <div class="kpi-body">
           <span class="kpi-value" id="kpi-workforce-value">0/0 คน</span>
           <span class="kpi-label">กำลังพลวันนี้</span>
         </div>
       </div>
       <div class="kpi-card kpi-percent">
-        <span class="kpi-icon" aria-hidden="true">📈</span>
+        <span class="kpi-icon" aria-hidden="true"><img src="icons/performance.png" alt=""></span>
         <div class="kpi-body">
           <span class="kpi-value" id="kpi-percent-value">0%</span>
           <span class="kpi-label">% กำลังพล</span>
         </div>
       </div>
       <div class="kpi-card kpi-work">
-        <span class="kpi-icon" aria-hidden="true">🛠️</span>
+        <span class="kpi-icon" aria-hidden="true"><img src="icons/tools.png" alt=""></span>
         <div class="kpi-body">
           <span class="kpi-value" id="kpi-work-value">0</span>
           <span class="kpi-label">ทำงาน</span>
         </div>
       </div>
       <div class="kpi-card kpi-leave">
-        <span class="kpi-icon" aria-hidden="true">🏥</span>
+        <span class="kpi-icon" aria-hidden="true"><img src="icons/leave.png" alt=""></span>
         <div class="kpi-body">
           <span class="kpi-value" id="kpi-leave-value">0</span>
           <span class="kpi-label">ลา</span>
         </div>
       </div>
       <div class="kpi-card kpi-off">
-        <span class="kpi-icon" aria-hidden="true">🏡</span>
+        <span class="kpi-icon" aria-hidden="true"><img src="icons/day-off.png" alt=""></span>
         <div class="kpi-body">
           <span class="kpi-value" id="kpi-off-value">0</span>
           <span class="kpi-label">วันหยุด</span>
         </div>
       </div>
       <div class="kpi-card kpi-noot">
-        <span class="kpi-icon" aria-hidden="true">🌙</span>
+        <span class="kpi-icon" aria-hidden="true"><img src="icons/no-ot.png" alt=""></span>
         <div class="kpi-body">
           <span class="kpi-value" id="kpi-noot-value">0</span>
           <span class="kpi-label">ไม่ทำ OT</span>
@@ -168,7 +168,7 @@
         <p class="submit-page-subtitle">บันทึกแผนการทำงาน ลา วันหยุด และการไม่ทำ OT ของทีมช่าง</p>
       </div>
       <div class="submit-header-note">
-        <span class="submit-header-note-icon" aria-hidden="true">✓</span>
+        <span class="submit-header-note-icon" aria-hidden="true"><img src="icons/success.png" alt=""></span>
         <div><strong>ข้อมูลเชื่อมต่อส่วนกลาง</strong><span>ทุกเครื่องเห็นข้อมูลชุดเดียวกัน</span></div>
       </div>
     </div>
@@ -184,7 +184,7 @@
         <label class="form-label" for="submit-employee-search"><span>ค้นหาช่าง</span><small>พิมพ์ชื่อหรือรหัสพนักงาน</small></label>
         <div class="employee-dept-filters" id="employee-dept-filters" role="group" aria-label="กรองรายชื่อตามแผนก"></div>
         <div class="employee-combobox" id="employee-combobox">
-          <span class="employee-search-icon" aria-hidden="true">⌕</span>
+          <span class="employee-search-icon" aria-hidden="true"><img src="icons/search.png" alt=""></span>
           <input
             class="form-input employee-search-input"
             type="search"
@@ -229,16 +229,16 @@
         <span class="form-label"><span>สถานะ</span><small>เลือก 1 รายการ</small></span>
         <div class="status-btn-group" id="status-btn-group">
           <button class="status-btn status-work" data-status="work" type="button">
-            <span class="status-icon" aria-hidden="true">🛠️</span><span>ทำงาน</span>
+            <span class="status-icon" aria-hidden="true"><img src="icons/tools.png" alt=""></span><span>ทำงาน</span>
           </button>
           <button class="status-btn status-leave" data-status="leave" type="button">
-            <span class="status-icon" aria-hidden="true">🏥</span><span>ลา</span>
+            <span class="status-icon" aria-hidden="true"><img src="icons/leave.png" alt=""></span><span>ลา</span>
           </button>
           <button class="status-btn status-off" data-status="off" type="button">
-            <span class="status-icon" aria-hidden="true">🏡</span><span>วันหยุด</span>
+            <span class="status-icon" aria-hidden="true"><img src="icons/day-off.png" alt=""></span><span>วันหยุด</span>
           </button>
           <button class="status-btn status-noot" data-status="no_ot" type="button">
-            <span class="status-icon" aria-hidden="true">🌙</span><span>ไม่ทำ OT</span>
+            <span class="status-icon" aria-hidden="true"><img src="icons/no-ot.png" alt=""></span><span>ไม่ทำ OT</span>
           </button>
         </div>
       </div>
@@ -250,9 +250,9 @@
 
       <div class="form-actions">
         <button class="btn btn-outline" id="btn-submit-cancel" type="button">ยกเลิก</button>
-        <button class="btn btn-danger is-hidden" id="btn-submit-delete" type="button">ลบรายการ</button>
+        <button class="btn btn-danger is-hidden" id="btn-submit-delete" type="button"><img class="btn-icon" src="icons/delete.png" alt="" aria-hidden="true"><span>ลบรายการ</span></button>
         <button class="btn btn-primary" id="btn-submit-save" type="button">
-          <span aria-hidden="true">💾</span><span id="submit-save-label">บันทึก</span>
+          <img class="btn-icon" src="icons/save.png" alt="" aria-hidden="true"><span id="submit-save-label">บันทึก</span>
         </button>
       </div>
     </div>
@@ -265,7 +265,7 @@
     <div class="manage-layout">
 
       <div class="form-card manage-form-card">
-        <h2 class="form-title">➕ เพิ่มพนักงาน</h2>
+        <h2 class="form-title"><img class="title-icon" src="icons/add-employee.png" alt="" aria-hidden="true">เพิ่มพนักงาน</h2>
 
         <div class="form-row">
           <label class="form-label" for="mgr-code">รหัสพนักงาน</label>
@@ -300,15 +300,15 @@
 
         <div class="form-actions">
           <button class="btn btn-primary" id="btn-mgr-add" type="button">
-            <span aria-hidden="true">➕</span><span>เพิ่มพนักงาน</span>
+            <img class="btn-icon" src="icons/add-employee.png" alt="" aria-hidden="true"><span>เพิ่มพนักงาน</span>
           </button>
         </div>
       </div>
 
       <div class="table-card">
         <div class="table-card-header">
-          <h2 class="form-title">👥 พนักงานทั้งหมด (<span id="mgr-total-count">0</span>)</h2>
-          <input class="form-input table-search" type="text" id="mgr-search" placeholder="🔍 ค้นหาชื่อหรือรหัส...">
+          <h2 class="form-title"><img class="title-icon" src="icons/employees.png" alt="" aria-hidden="true">พนักงานทั้งหมด (<span id="mgr-total-count">0</span>)</h2>
+          <input class="form-input table-search table-search-icon" type="text" id="mgr-search" placeholder="ค้นหาชื่อหรือรหัส...">
         </div>
         <div class="table-scroll">
           <table class="employee-table" id="employee-table">
@@ -332,7 +332,7 @@
      ============================================================ -->
 <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
-<script src="config.js?v=20260827-ij-search"></script>
-<script src="app.js?v=20260827-ij-search"></script>
+<script src="config.js?v=20260827-streamline-icons"></script>
+<script src="app.js?v=20260827-streamline-icons"></script>
 </body>
 </html>
