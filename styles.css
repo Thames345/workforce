@@ -128,6 +128,7 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius-md);
 }
+.header-logo img { width: 30px; height: 30px; object-fit: contain; }
 
 .header-title {
   display: flex;
@@ -235,7 +236,8 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   transition: color var(--ease) 0.15s, border-color var(--ease) 0.15s, background var(--ease) 0.15s;
 }
 
-.nav-icon { font-size: 15px; }
+.nav-icon { width: 22px; height: 22px; display: grid; place-items: center; }
+.nav-icon img { width: 22px; height: 22px; object-fit: contain; }
 
 .nav-btn:hover { color: var(--navy-800); background: var(--gray-bg); }
 
@@ -310,6 +312,7 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   transition: filter var(--ease) 0.15s, transform var(--ease) 0.1s, box-shadow var(--ease) 0.15s;
   white-space: nowrap;
 }
+.btn-icon { width: 21px; height: 21px; flex: 0 0 auto; object-fit: contain; }
 .btn:active { transform: scale(0.98); }
 
 .btn-primary {
@@ -378,6 +381,7 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   justify-content: center;
   background: var(--navy-100);
 }
+.kpi-icon img { width: 29px; height: 29px; object-fit: contain; }
 
 .kpi-body { display: flex; flex-direction: column; min-width: 0; }
 
@@ -755,6 +759,7 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   background: var(--white);
   box-shadow: 0 1px 2px rgba(11, 37, 69, 0.14);
 }
+.emp-status img { width: 16px; height: 16px; object-fit: contain; }
 
 /* ------------------------------------------------------------
    SECTION: FORMS (Submit Status / Manage Employees)
@@ -867,6 +872,7 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   line-height: 1;
   pointer-events: none;
 }
+.employee-search-icon img { width: 25px; height: 25px; object-fit: contain; }
 .form-card-submit .employee-search-input {
   padding-left: 42px;
   padding-right: 42px;
@@ -986,7 +992,8 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   transition: border-color var(--ease) 0.15s, background var(--ease) 0.15s, transform var(--ease) 0.1s;
 }
 .status-btn:hover { border-color: var(--gray-400); transform: translateY(-1px); }
-.status-icon { font-size: 22px; }
+.status-icon { width: 31px; height: 31px; display: grid; place-items: center; }
+.status-icon img { width: 31px; height: 31px; object-fit: contain; }
 
 .status-work.selected { border-color: var(--status-work); background: var(--status-work-bg); color: var(--status-work); }
 .status-leave.selected { border-color: var(--status-leave); background: var(--status-leave-bg); color: var(--status-leave); }
@@ -1034,6 +1041,17 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
 .table-card-header .form-title { margin-bottom: 0; }
 
 .table-search { max-width: 260px; }
+.table-search-icon {
+  padding-left: 43px;
+  background-image: url('icons/search.png');
+  background-repeat: no-repeat;
+  background-position: 12px center;
+  background-size: 24px 24px;
+}
+.title-icon { width: 25px; height: 25px; flex: 0 0 auto; object-fit: contain; }
+
+.status-table-label { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.status-table-label img { width: 22px; height: 22px; object-fit: contain; }
 
 .table-scroll { flex: 1; min-height: 0; overflow-y: auto; border-radius: var(--radius-sm); }
 
@@ -1101,6 +1119,15 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   border-left: 3px solid var(--green-500);
 }
 .toast.toast-show { opacity: 1; transform: translateY(0) scale(1); }
+.toast-icon {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 7px;
+  object-fit: contain;
+}
 .toast-error { background: #7A1E17; border-left-color: #FF6B6B; }
 .toast-warning { background: #7A4A0A; border-left-color: #FFC94A; }
 
@@ -1243,6 +1270,7 @@ strong, b, .kpi-value, .form-title { font-weight: 600; }
   font-size: 16px;
   font-weight: 600;
 }
+.submit-header-note-icon img { width: 25px; height: 25px; object-fit: contain; }
 
 .submit-header-note div { display: flex; flex-direction: column; }
 .submit-header-note strong { color: var(--white); font-size: 12px; font-weight: 600; }
