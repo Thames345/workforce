@@ -20,7 +20,7 @@
    SECTION 1: CONSTANTS & INITIAL DATA
    ------------------------------------------------------------ */
 
-var DEPARTMENTS = ['MVR', 'MVR-LOTUS', 'MSR', 'MPR'];
+var DEPARTMENTS = ['MVR', 'MVR-LOTUS', 'MSR', 'MPR', 'IJ'];
 
 var STATUS_META = {
   work:  { label: 'ทำงาน',    icon: '🛠️', cls: 'status-work'  },
@@ -47,7 +47,10 @@ var state = {
   lastSyncedAt: null,
   selectedStatus: null, // used on the Submit Status page
   editingEntryId: null,
-  requestInFlight: false
+  requestInFlight: false,
+  employeeDepartmentFilter: 'ALL',
+  employeePickerMatches: [],
+  employeePickerActiveIndex: -1
 };
 
 /* ------------------------------------------------------------
@@ -389,6 +392,7 @@ function renderDeptGrid() {
     card.className = 'dept-card';
 
     var rowsHtml = emps.map(function (e) { return renderEmployeeRow(e, stats); }).join('');
+    if (!rowsHtml) rowsHtml = '<div class="dept-empty">ยังไม่มีพนักงานในแผนก</div>';
     var listClass = 'dept-employees' + (emps.length > 6 ? ' dept-employees-2col' : '');
 
     card.innerHTML =
@@ -421,22 +425,123 @@ function renderEmployeeRow(emp, stats) {
    SECTION 8: SUBMIT STATUS PAGE
    ------------------------------------------------------------ */
 
-function populateEmployeeSelect() {
-  var select = document.getElementById('submit-employee');
-  var currentValue = select.value;
+function normalizeEmployeeSearch(value) {
+  return String(value || '').toLocaleLowerCase('th-TH').replace(/\s+/g, '');
+}
 
-  var sorted = state.employees.slice().sort(function (a, b) {
+function getEmployeePickerMatches() {
+  var input = document.getElementById('submit-employee-search');
+  var query = normalizeEmployeeSearch(input ? input.value : '');
+  var selectedCode = document.getElementById('submit-employee').value;
+  var selectedEmployee = state.employees.find(function (e) { return e.employee_code === selectedCode; });
+
+  // The friendly selected label is not a search query until the user edits it.
+  if (selectedEmployee && input.value === selectedEmployee.full_name + ' · ' + selectedEmployee.employee_code) query = '';
+
+  return state.employees.filter(function (e) {
+    var departmentMatches = state.employeeDepartmentFilter === 'ALL' || e.department_code === state.employeeDepartmentFilter;
+    if (!departmentMatches) return false;
+    if (!query) return true;
+    var haystack = normalizeEmployeeSearch(e.employee_code + ' ' + e.full_name + ' ' + e.department + ' ' + e.department_code);
+    return haystack.indexOf(query) !== -1;
+  }).sort(function (a, b) {
     return a.department_code.localeCompare(b.department_code) || a.full_name.localeCompare(b.full_name, 'th');
   });
+}
 
-  var options = '<option value="">— Select employee —</option>' + sorted.map(function (e) {
-    return '<option value="' + escapeHtml(e.employee_code) + '">' +
-      escapeHtml(e.employee_code) + ' — ' + escapeHtml(e.full_name) + ' (' + escapeHtml(e.department_code) + ')' +
-      '</option>';
+function renderEmployeeDepartmentFilters() {
+  var container = document.getElementById('employee-dept-filters');
+  if (!container) return;
+  container.innerHTML = ['ALL'].concat(DEPARTMENTS).map(function (code) {
+    var label = code === 'ALL' ? 'ทั้งหมด' : (code === 'MVR-LOTUS' ? 'LOTUS' : code);
+    var count = code === 'ALL'
+      ? state.employees.length
+      : state.employees.filter(function (e) { return e.department_code === code; }).length;
+    return '<button class="employee-dept-filter' + (state.employeeDepartmentFilter === code ? ' active' : '') + '" type="button" data-employee-dept="' + escapeHtml(code) + '" aria-pressed="' + (state.employeeDepartmentFilter === code ? 'true' : 'false') + '">' +
+      '<span>' + escapeHtml(label) + '</span><small>' + count + '</small>' +
+      '</button>';
   }).join('');
+}
 
-  select.innerHTML = options;
-  select.value = currentValue;
+function renderEmployeePickerResults(openResults) {
+  var results = document.getElementById('submit-employee-results');
+  var input = document.getElementById('submit-employee-search');
+  var summary = document.getElementById('employee-search-summary');
+  if (!results || !input) return;
+
+  state.employeePickerMatches = getEmployeePickerMatches();
+  if (state.employeePickerActiveIndex >= state.employeePickerMatches.length) state.employeePickerActiveIndex = -1;
+
+  if (!state.employeePickerMatches.length) {
+    results.innerHTML = '<div class="employee-result-empty">ไม่พบรายชื่อที่ค้นหา<br><small>ลองพิมพ์ชื่อ รหัส หรือเลือกแผนกอื่น</small></div>';
+  } else {
+    results.innerHTML = state.employeePickerMatches.map(function (e, index) {
+      var initial = (e.full_name || '?').replace(/^(นาย|นางสาว|นาง)/, '').trim().charAt(0) || '?';
+      return '<button class="employee-result-item' + (index === state.employeePickerActiveIndex ? ' active' : '') + '" id="employee-result-' + index + '" type="button" role="option" aria-selected="' + (index === state.employeePickerActiveIndex ? 'true' : 'false') + '" data-employee-code="' + escapeHtml(e.employee_code) + '">' +
+        '<span class="employee-result-avatar" aria-hidden="true">' + escapeHtml(initial) + '</span>' +
+        '<span class="employee-result-main"><strong>' + escapeHtml(e.full_name) + '</strong><small>รหัส ' + escapeHtml(e.employee_code) + '</small></span>' +
+        '<span class="employee-result-meta"><strong>' + escapeHtml(e.department_code) + '</strong><small>กะ ' + escapeHtml(e.shift || '—') + '</small></span>' +
+      '</button>';
+    }).join('');
+  }
+
+  var selectedCode = document.getElementById('submit-employee').value;
+  var selected = state.employees.find(function (e) { return e.employee_code === selectedCode; });
+  if (summary) {
+    summary.textContent = selected
+      ? 'เลือกแล้ว: ' + selected.full_name + ' · ' + selected.department_code + ' · กะ ' + (selected.shift || '—')
+      : 'พบ ' + state.employeePickerMatches.length + ' คน' + (state.employeeDepartmentFilter === 'ALL' ? ' จากทุกแผนก' : ' ในแผนก ' + state.employeeDepartmentFilter);
+  }
+
+  results.classList.toggle('is-hidden', !openResults);
+  input.setAttribute('aria-expanded', openResults ? 'true' : 'false');
+  input.removeAttribute('aria-activedescendant');
+  if (openResults && state.employeePickerActiveIndex >= 0) {
+    input.setAttribute('aria-activedescendant', 'employee-result-' + state.employeePickerActiveIndex);
+  }
+}
+
+function closeEmployeePicker() {
+  state.employeePickerActiveIndex = -1;
+  renderEmployeePickerResults(false);
+}
+
+function selectEmployeeByCode(code) {
+  code = String(code || '').trim();
+  var emp = state.employees.find(function (e) { return e.employee_code === code; });
+  if (!emp) return;
+
+  document.getElementById('submit-employee').value = emp.employee_code;
+  document.getElementById('submit-employee-search').value = emp.full_name + ' · ' + emp.employee_code;
+  document.getElementById('employee-search-clear').classList.remove('is-hidden');
+  updateEmployeeInfo(emp);
+  loadExistingAttendanceIntoForm();
+  closeEmployeePicker();
+}
+
+function clearEmployeePicker(keepFocus) {
+  document.getElementById('submit-employee').value = '';
+  document.getElementById('submit-employee-search').value = '';
+  document.getElementById('employee-search-clear').classList.add('is-hidden');
+  updateEmployeeInfo(null);
+  loadExistingAttendanceIntoForm();
+  state.employeePickerActiveIndex = -1;
+  renderEmployeePickerResults(!!keepFocus);
+  if (keepFocus) document.getElementById('submit-employee-search').focus();
+}
+
+function populateEmployeeSelect() {
+  var selectedCode = document.getElementById('submit-employee').value;
+  var selected = state.employees.find(function (e) { return e.employee_code === selectedCode; });
+  renderEmployeeDepartmentFilters();
+  if (selected) {
+    document.getElementById('submit-employee-search').value = selected.full_name + ' · ' + selected.employee_code;
+    document.getElementById('employee-search-clear').classList.remove('is-hidden');
+  } else if (selectedCode) {
+    clearEmployeePicker(false);
+    return;
+  }
+  renderEmployeePickerResults(false);
 }
 
 function prepareSubmitForm() {
@@ -450,12 +555,15 @@ function prepareSubmitForm() {
 function resetSubmitFormFields() {
   state.editingEntryId = null;
   document.getElementById('submit-employee').value = '';
-  document.getElementById('submit-employee').disabled = false;
+  document.getElementById('submit-employee-search').value = '';
+  document.getElementById('employee-search-clear').classList.add('is-hidden');
+  state.employeePickerActiveIndex = -1;
   updateEmployeeInfo(null);
   document.getElementById('submit-note').value = '';
   document.getElementById('btn-submit-delete').classList.add('is-hidden');
   document.getElementById('submit-save-label').textContent = 'บันทึก';
   clearStatusSelection();
+  renderEmployeePickerResults(false);
 }
 
 function updateEmployeeInfo(emp) {
@@ -481,7 +589,6 @@ function loadExistingAttendanceIntoForm() {
   });
 
   state.editingEntryId = record ? record.entry_id : null;
-  document.getElementById('submit-employee').disabled = false;
   document.getElementById('btn-submit-delete').classList.toggle('is-hidden', !record);
   document.getElementById('submit-save-label').textContent = record ? 'บันทึกการแก้ไข' : 'บันทึก';
 
@@ -582,9 +689,8 @@ function startEditAttendance(entryId) {
   var record = state.attendance.find(function (r) { return r.entry_id === entryId; });
   if (!record) return;
   state.editingEntryId = entryId;
-  document.getElementById('submit-employee').value = record.employee_code;
-  document.getElementById('submit-employee').disabled = true;
   document.getElementById('submit-date').value = record.date;
+  selectEmployeeByCode(record.employee_code);
   document.getElementById('submit-note').value = record.note || '';
   updateEmployeeInfo(state.employees.find(function (e) { return e.employee_code === record.employee_code; }) || null);
   document.getElementById('submit-shift').value = record.shift;
@@ -651,8 +757,8 @@ async function handleAddEmployee() {
   if (state.requestInFlight) return;
   var code = document.getElementById('mgr-code').value.trim();
   var name = document.getElementById('mgr-name').value.trim();
-  var dept = document.getElementById('mgr-dept').value.trim();
-  var deptCode = document.getElementById('mgr-dept-code').value;
+  var deptCode = document.getElementById('mgr-dept').value;
+  var dept = deptCode === 'MVR-LOTUS' ? 'MVR(Lotus)' : deptCode;
   var position = document.getElementById('mgr-position').value.trim() || 'ช่างเทคนิค';
   var shift = document.getElementById('mgr-shift').value;
 
@@ -681,9 +787,9 @@ async function handleAddEmployee() {
   try {
     await postToScript('upsertEmployee', record);
     await syncNow({ silent: true });
-    ['mgr-code', 'mgr-name', 'mgr-dept'].forEach(function (id) { document.getElementById(id).value = ''; });
+    ['mgr-code', 'mgr-name'].forEach(function (id) { document.getElementById(id).value = ''; });
     document.getElementById('mgr-position').value = 'ช่างเทคนิค';
-    document.getElementById('mgr-dept-code').value = 'MVR';
+    document.getElementById('mgr-dept').value = 'MVR';
     document.getElementById('mgr-shift').value = 'A';
     showToast('เพิ่มพนักงาน "' + name + '" เรียบร้อยแล้ว', 'success');
   } catch (err) {
@@ -747,10 +853,57 @@ function wireEvents() {
     renderCalendar();
   });
 
-  document.getElementById('submit-employee').addEventListener('change', function (e) {
-    var emp = state.employees.find(function (x) { return x.employee_code === e.target.value; });
-    updateEmployeeInfo(emp || null);
-    loadExistingAttendanceIntoForm();
+  document.getElementById('employee-dept-filters').addEventListener('click', function (e) {
+    var button = e.target.closest('[data-employee-dept]');
+    if (!button) return;
+    state.employeeDepartmentFilter = button.dataset.employeeDept;
+    if (document.getElementById('submit-employee').value) clearEmployeePicker(false);
+    state.employeePickerActiveIndex = -1;
+    renderEmployeeDepartmentFilters();
+    renderEmployeePickerResults(true);
+    document.getElementById('submit-employee-search').focus();
+  });
+
+  document.getElementById('submit-employee-search').addEventListener('focus', function () {
+    if (document.getElementById('submit-employee').value) this.select();
+    renderEmployeePickerResults(true);
+  });
+  document.getElementById('submit-employee-search').addEventListener('input', function () {
+    if (document.getElementById('submit-employee').value) {
+      document.getElementById('submit-employee').value = '';
+      document.getElementById('employee-search-clear').classList.add('is-hidden');
+      updateEmployeeInfo(null);
+      loadExistingAttendanceIntoForm();
+    }
+    state.employeePickerActiveIndex = -1;
+    renderEmployeePickerResults(true);
+  });
+  document.getElementById('submit-employee-search').addEventListener('keydown', function (e) {
+    var max = state.employeePickerMatches.length;
+    if (e.key === 'ArrowDown' && max) {
+      e.preventDefault();
+      state.employeePickerActiveIndex = (state.employeePickerActiveIndex + 1) % max;
+      renderEmployeePickerResults(true);
+    } else if (e.key === 'ArrowUp' && max) {
+      e.preventDefault();
+      state.employeePickerActiveIndex = state.employeePickerActiveIndex <= 0 ? max - 1 : state.employeePickerActiveIndex - 1;
+      renderEmployeePickerResults(true);
+    } else if (e.key === 'Enter' && state.employeePickerActiveIndex >= 0) {
+      e.preventDefault();
+      selectEmployeeByCode(state.employeePickerMatches[state.employeePickerActiveIndex].employee_code);
+    } else if (e.key === 'Escape') {
+      closeEmployeePicker();
+    }
+  });
+  document.getElementById('submit-employee-results').addEventListener('click', function (e) {
+    var button = e.target.closest('[data-employee-code]');
+    if (button) selectEmployeeByCode(button.dataset.employeeCode);
+  });
+  document.getElementById('employee-search-clear').addEventListener('click', function () {
+    clearEmployeePicker(true);
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('#employee-combobox') && !e.target.closest('#employee-dept-filters')) closeEmployeePicker();
   });
 
   document.querySelectorAll('.status-btn').forEach(function (btn) {
