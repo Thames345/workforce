@@ -23,10 +23,10 @@
 var DEPARTMENTS = ['MVR', 'MVR-LOTUS', 'MSR', 'MPR', 'IJ'];
 
 var STATUS_META = {
-  work:  { label: 'ทำงาน',    icon: '🛠️', cls: 'status-work'  },
-  leave: { label: 'ลา',        icon: '🏥', cls: 'status-leave' },
-  off:   { label: 'วันหยุด',   icon: '🏡', cls: 'status-off'   },
-  no_ot: { label: 'ไม่ทำ OT', icon: '🌙', cls: 'status-noot'  }
+  work:  { label: 'ทำงาน',    icon: 'icons/tools.png',   cls: 'status-work'  },
+  leave: { label: 'ลา',        icon: 'icons/leave.png',   cls: 'status-leave' },
+  off:   { label: 'วันหยุด',   icon: 'icons/day-off.png', cls: 'status-off'   },
+  no_ot: { label: 'ไม่ทำ OT', icon: 'icons/no-ot.png',   cls: 'status-noot'  }
 };
 
 /* ------------------------------------------------------------
@@ -282,9 +282,9 @@ function renderDashboard() {
 
 function renderGreeting() {
   var hour = new Date().getHours();
-  var greet = 'สวัสดีตอนเช้า 👋';
-  if (hour >= 12 && hour < 18) greet = 'สวัสดีตอนบ่าย 👋';
-  else if (hour >= 18 || hour < 5) greet = 'สวัสดีตอนเย็น 👋';
+  var greet = 'สวัสดีตอนเช้า';
+  if (hour >= 12 && hour < 18) greet = 'สวัสดีตอนบ่าย';
+  else if (hour >= 18 || hour < 5) greet = 'สวัสดีตอนเย็น';
   document.getElementById('greeting-text').textContent = greet;
   document.getElementById('greeting-date').textContent =
     new Date().toLocaleDateString('th-TH-u-ca-gregory', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -416,7 +416,7 @@ function renderEmployeeRow(emp, stats) {
     '<div class="emp-row ' + meta.cls + '">' +
       '<span class="emp-shift shift-' + escapeHtml(emp.shift) + '">' + escapeHtml(emp.shift) + '</span>' +
       '<span class="emp-name" title="' + escapeHtml(emp.full_name) + '">' + escapeHtml(emp.full_name) + '</span>' +
-      '<span class="emp-status ' + meta.cls + '" title="' + escapeHtml(meta.label) + '">' + meta.icon + '</span>' +
+      '<span class="emp-status ' + meta.cls + '" title="' + escapeHtml(meta.label) + '"><img src="' + escapeHtml(meta.icon) + '" alt=""></span>' +
     '</div>'
   );
 }
@@ -668,7 +668,7 @@ function renderAttendanceTable() {
     return '<tr>' +
       '<td>' + escapeHtml(r.employee_code + ' — ' + r.full_name) + '</td>' +
       '<td>' + escapeHtml(r.shift) + '</td>' +
-      '<td>' + meta.icon + ' ' + escapeHtml(meta.label) + '</td>' +
+      '<td><span class="status-table-label"><img src="' + escapeHtml(meta.icon) + '" alt="">' + escapeHtml(meta.label) + '</span></td>' +
       '<td>' + escapeHtml(r.note || '—') + '</td>' +
       '<td>' + escapeHtml(formatServerDateTime(r.updated_at)) + '</td>' +
       '<td><div class="attendance-actions">' +
@@ -808,11 +808,11 @@ function showToast(message, type) {
   var container = document.getElementById('toast-container');
   var toast = document.createElement('div');
   var cls = 'toast';
-  var icon = '✅';
-  if (type === 'error') { cls += ' toast-error'; icon = '⚠️'; }
-  else if (type === 'warning') { cls += ' toast-warning'; icon = '🕓'; }
+  var icon = 'icons/success.png';
+  if (type === 'error') { cls += ' toast-error'; icon = 'icons/error.png'; }
+  else if (type === 'warning') { cls += ' toast-warning'; icon = 'icons/warning.png'; }
   toast.className = cls;
-  toast.innerHTML = '<span aria-hidden="true">' + icon + '</span><span>' + escapeHtml(message) + '</span>';
+  toast.innerHTML = '<img class="toast-icon" src="' + escapeHtml(icon) + '" alt="" aria-hidden="true"><span>' + escapeHtml(message) + '</span>';
   container.appendChild(toast);
 
   requestAnimationFrame(function () { toast.classList.add('toast-show'); });
