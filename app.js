@@ -541,7 +541,9 @@ function populateEmployeeSelect() {
     clearEmployeePicker(false);
     return;
   }
-  renderEmployeePickerResults(false);
+  // Show the full list immediately when no employee is selected. Technicians
+  // can tap their name at once; typing is only an optional quick filter.
+  renderEmployeePickerResults(!selected);
 }
 
 function prepareSubmitForm() {
@@ -563,7 +565,7 @@ function resetSubmitFormFields() {
   document.getElementById('btn-submit-delete').classList.add('is-hidden');
   document.getElementById('submit-save-label').textContent = 'บันทึก';
   clearStatusSelection();
-  renderEmployeePickerResults(false);
+  renderEmployeePickerResults(true);
 }
 
 function updateEmployeeInfo(emp) {
@@ -902,9 +904,8 @@ function wireEvents() {
   document.getElementById('employee-search-clear').addEventListener('click', function () {
     clearEmployeePicker(true);
   });
-  document.addEventListener('click', function (e) {
-    if (!e.target.closest('#employee-combobox') && !e.target.closest('#employee-dept-filters')) closeEmployeePicker();
-  });
+  // Keep the list open until a technician is selected. It can still be closed
+  // with Escape, and it closes automatically after choosing a name.
 
   document.querySelectorAll('.status-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
